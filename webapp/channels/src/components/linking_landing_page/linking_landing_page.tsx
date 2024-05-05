@@ -436,6 +436,10 @@ export default class LinkingLandingPage extends PureComponent<Props, State> {
     render() {
         const isMobile = UserAgent.isMobile();
 
+        // Open in browser default in UClone
+        this.openInBrowser();
+        return null;
+
         if (this.checkLandingPreferenceBrowser() || this.isEmbedded()) {
             this.openInBrowser();
             return null;

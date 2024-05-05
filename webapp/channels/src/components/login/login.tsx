@@ -129,8 +129,8 @@ const Login = ({onCustomizeHeader}: LoginProps) => {
     const enableSignInWithEmail = EnableSignInWithEmail === 'true';
     const enableSignInWithUsername = EnableSignInWithUsername === 'true';
     const enableSignUpWithEmail = EnableSignUpWithEmail === 'true';
-    const enableSignUpWithGitLab = EnableSignUpWithGitLab === 'true';
-    const enableSignUpWithGoogle = EnableSignUpWithGoogle === 'true';
+    const enableSignUpWithGitLab = false; //EnableSignUpWithGitLab === 'true';
+    const enableSignUpWithGoogle = true; // EnableSignUpWithGoogle === 'true';
     const enableSignUpWithOffice365 = EnableSignUpWithOffice365 === 'true';
     const enableSignUpWithOpenId = EnableSignUpWithOpenId === 'true';
     const isLicensed = IsLicensed === 'true';
@@ -732,7 +732,7 @@ const Login = ({onCustomizeHeader}: LoginProps) => {
 
         return (
             <p className='login-body-message-subtitle'>
-                {formatMessage({id: 'login.subtitle', defaultMessage: 'Collaborate with your team in real-time'})}
+                {formatMessage({id: 'login.subtitle', defaultMessage: 'Ask to AI Bots and Build your own Bot.'})}
             </p>
         );
     };
