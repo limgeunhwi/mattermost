@@ -85,7 +85,9 @@ func (gp *GoogleProvider) GetUserFromJSON(c request.CTX, data io.Reader, tokenUs
 		return nil, err
 	}
 	if err = glu.IsValid(); err != nil {
-		return nil, err
+		result, _ := io.ReadAll(data)
+		return nil, errors.New("Json data : " + string(result))
+		// return nil, err
 	}
 
 	return userFromGoogleUser(c.Logger(), glu), nil
