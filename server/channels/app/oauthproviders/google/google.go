@@ -17,12 +17,12 @@ type GoogleProvider struct {
 }
 
 type GoogleUser struct {
-	Id       int64  `json:"sub"`
-	Username string `json:"username"`
-	Login    string `json:"login"`
-	Email    string `json:"email"`
-	Picture  string `json:"picture"`
-	Name     string `json:"name"`
+	Sub       string `json:"sub"`
+	Email     string `json:"email"`
+	Picture   string `json:"picture"`
+	Name      string `json:"name"`
+	Firstname string `json:"given_name"`
+	Lastname  string `json:"family_name"`
 }
 
 func init() {
@@ -32,13 +32,15 @@ func init() {
 
 func userFromGoogleUser(logger mlog.LoggerIFace, glu *GoogleUser) *model.User {
 	user := &model.User{}
-	username := glu.Username
+	username := glu.Name
 	if username == "" {
-		username = glu.Login
+		username = glu.Email
 	}
 	user.Username = model.CleanUsername(logger, username)
+	user.FirstName = glu.Firstname
+	user.LastName = glu.Lastname
 	splitName := strings.Split(glu.Name, " ")
-	if len(splitName) == 2 {
+	if len(splitName) == 2 && user.FirstName == "" {
 		user.FirstName = splitName[0]
 		user.LastName = splitName[1]
 	} else if len(splitName) >= 2 {
@@ -47,10 +49,10 @@ func userFromGoogleUser(logger mlog.LoggerIFace, glu *GoogleUser) *model.User {
 	} else {
 		user.FirstName = glu.Name
 	}
+
 	user.Email = glu.Email
 	user.Email = strings.ToLower(user.Email)
-	userId := glu.getAuthData()
-	user.AuthData = &userId
+	user.AuthData = &glu.Sub
 	user.AuthService = model.ServiceGoogle
 
 	return user
