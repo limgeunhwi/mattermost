@@ -15,13 +15,57 @@ import (
 type GoogleProvider struct {
 }
 
+// Name: A person's name. If the name is a mononym, the family name is empty.
+type Name struct {
+	// DisplayName: Output only. The display name formatted according to the locale
+	// specified by the viewer's account or the `Accept-Language` HTTP header.
+	DisplayName string `json:"displayName,omitempty"`
+	// DisplayNameLastFirst: Output only. The display name with the last name first
+	// formatted according to the locale specified by the viewer's account or the
+	// `Accept-Language` HTTP header.
+	DisplayNameLastFirst string `json:"displayNameLastFirst,omitempty"`
+	// FamilyName: The family name.
+	FamilyName string `json:"familyName,omitempty"`
+	// GivenName: The given name.
+	GivenName string `json:"givenName,omitempty"`
+}
+
+type Photo struct {
+	// Default: True if the photo is a default photo; false if the photo is a
+	// user-provided photo.
+	Default bool `json:"default,omitempty"`
+	// Url: The URL of the photo. You can change the desired size by appending a
+	// query parameter `sz={size}` at the end of the url, where {size} is the size
+	// in pixels. Example:
+	// https://lh3.googleusercontent.com/-T_wVWLlmg7w/AAAAAAAAAAI/AAAAAAAABa8/00gzXvDBYqw/s100/photo.jpg?sz=50
+	Url string `json:"url,omitempty"`
+}
+
+// EmailAddress: A person's email address.
+type EmailAddress struct {
+	// DisplayName: The display name of the email.
+	DisplayName string `json:"displayName,omitempty"`
+	// Value: The email address.
+	Value string `json:"value,omitempty"`
+}
+
+// This is subset of Person struct defined in google-api-go-client/people/v1/people-gen.go
 type GoogleUser struct {
-	Sub       string `json:"sub"`
-	Email     string `json:"email"`
-	Picture   string `json:"picture"`
-	Name      string `json:"name"`
-	Firstname string `json:"given_name"`
-	Lastname  string `json:"family_name"`
+	// EmailAddresses: The person's email addresses. For `people.connections.list`
+	// and `otherContacts.list` the number of email addresses is limited to 100. If
+	// a Person has more email addresses the entire set can be obtained by calling
+	// GetPeople.
+	EmailAddresses []*EmailAddress `json:"emailAddresses,omitempty"`
+	// Etag: The HTTP entity tag (https://en.wikipedia.org/wiki/HTTP_ETag) of the
+	// resource. Used for web cache validation.
+	Etag string `json:"etag,omitempty"`
+	// Names: The person's names. This field is a singleton for contact sources.
+	Names []*Name `json:"names,omitempty"`
+	// Photos: Output only. The person's photos.
+	Photos []*Photo `json:"photos,omitempty"`
+	// ResourceName: The resource name for the person, assigned by the server. An
+	// ASCII string in the form of `people/{person_id}`.
+	ResourceName string `json:"resourceName,omitempty"`
 }
 
 func init() {
@@ -31,27 +75,20 @@ func init() {
 
 func userFromGoogleUser(logger mlog.LoggerIFace, glu *GoogleUser) *model.User {
 	user := &model.User{}
-	username := glu.Name
+	user.Id = glu.ResourceName
+	glu_name := glu.Names[0]
+	glu_mail := glu.EmailAddresses[0]
+	username := glu_name.DisplayName
 	if username == "" {
-		username = glu.Email
+		username = glu_mail.Value
 	}
 	user.Username = model.CleanUsername(logger, username)
-	user.FirstName = glu.Firstname
-	user.LastName = glu.Lastname
-	splitName := strings.Split(glu.Name, " ")
-	if len(splitName) == 2 && user.FirstName == "" {
-		user.FirstName = splitName[0]
-		user.LastName = splitName[1]
-	} else if len(splitName) >= 2 {
-		user.FirstName = splitName[0]
-		user.LastName = strings.Join(splitName[1:], " ")
-	} else {
-		user.FirstName = glu.Name
-	}
+	user.FirstName = glu_name.GivenName
+	user.LastName = glu_name.FamilyName
 
-	user.Email = glu.Email
+	user.Email = glu_mail.Value
 	user.Email = strings.ToLower(user.Email)
-	user.AuthData = &glu.Sub
+	user.AuthData = &glu.ResourceName
 	user.AuthService = model.ServiceGoogle
 
 	return user
@@ -80,9 +117,8 @@ func (glu *GoogleUser) IsValid() error {
 }
 
 func (gp *GoogleProvider) GetUserFromJSON(c request.CTX, data io.Reader, tokenUser *model.User) (*model.User, error) {
-	result, _ := io.ReadAll(data)
-	return nil, errors.New("Json data : " + string(result))
-
+	// result, _ := io.ReadAll(data)
+	// return nil, errors.New("Json data : " + string(result))
 	glu, err := getGoogleUserFromJSON(data)
 	if err != nil {
 		return nil, err
