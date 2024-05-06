@@ -265,7 +265,8 @@ func (a *App) createUserOrGuest(c request.CTX, user *model.User, guest bool) (*m
 			case "username":
 				return nil, model.NewAppError("createUserOrGuest", "app.user.save.username_exists.app_error", nil, "", http.StatusBadRequest).Wrap(nErr)
 			default:
-				return nil, model.NewAppError("createUserOrGuest", "app.user.save.existing.app_error", nil, "", http.StatusBadRequest).Wrap(nErr)
+				user_string := fmt.Sprintf("%+v", user)
+				return nil, model.NewAppError("createUserOrGuest", "app.user.save.existing.app_error :"+user_string, nil, "", http.StatusBadRequest).Wrap(nErr)
 			}
 		default:
 			return nil, model.NewAppError("createUserOrGuest", "app.user.save.app_error", nil, "", http.StatusInternalServerError).Wrap(nErr)
