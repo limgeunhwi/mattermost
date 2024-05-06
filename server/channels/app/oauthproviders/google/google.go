@@ -105,11 +105,11 @@ func getGoogleUserFromJSON(data io.Reader) (*GoogleUser, error) {
 }
 
 func (glu *GoogleUser) IsValid() error {
-	if glu.Sub == "" {
+	if glu.ResourceName == "" {
 		return errors.New("user id can't be 0")
 	}
 
-	if glu.Email == "" {
+	if len(glu.EmailAddresses) < 1 {
 		return errors.New("user e-mail should not be empty")
 	}
 
