@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"strconv"
 	"strings"
 
 	"github.com/mattermost/mattermost/server/public/model"
@@ -69,7 +68,7 @@ func getGoogleUserFromJSON(data io.Reader) (*GoogleUser, error) {
 }
 
 func (glu *GoogleUser) IsValid() error {
-	if glu.Id == 0 {
+	if glu.Sub == "" {
 		return errors.New("user id can't be 0")
 	}
 
@@ -78,10 +77,6 @@ func (glu *GoogleUser) IsValid() error {
 	}
 
 	return nil
-}
-
-func (glu *GoogleUser) getAuthData() string {
-	return strconv.FormatInt(glu.Id, 10)
 }
 
 func (gp *GoogleProvider) GetUserFromJSON(c request.CTX, data io.Reader, tokenUser *model.User) (*model.User, error) {
