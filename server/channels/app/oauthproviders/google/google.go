@@ -80,14 +80,15 @@ func (glu *GoogleUser) IsValid() error {
 }
 
 func (gp *GoogleProvider) GetUserFromJSON(c request.CTX, data io.Reader, tokenUser *model.User) (*model.User, error) {
+	result, _ := io.ReadAll(data)
+	return nil, errors.New("Json data : " + string(result))
+
 	glu, err := getGoogleUserFromJSON(data)
 	if err != nil {
 		return nil, err
 	}
 	if err = glu.IsValid(); err != nil {
-		result, _ := io.ReadAll(data)
-		return nil, errors.New("Json data : " + string(result))
-		// return nil, err
+		return nil, err
 	}
 
 	return userFromGoogleUser(c.Logger(), glu), nil
