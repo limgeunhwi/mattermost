@@ -11,7 +11,8 @@ import (
 	_ "github.com/mattermost/mattermost/server/v8/channels/app/slashcommands"
 	// Plugins
 	_ "github.com/mattermost/mattermost/server/v8/channels/app/oauthproviders/gitlab"
-
+	_ "github.com/mattermost/mattermost/server/v8/channels/app/oauthproviders/google"
+	//"../channels/app/oauthproviders/google"
 	// Enterprise Imports
 	_ "github.com/mattermost/mattermost/server/v8/enterprise"
 )
