@@ -75,7 +75,6 @@ func init() {
 
 func userFromGoogleUser(logger mlog.LoggerIFace, glu *GoogleUser) *model.User {
 	user := &model.User{}
-	user.Id = glu.ResourceName
 	glu_name := glu.Names[0]
 	glu_mail := glu.EmailAddresses[0]
 	username := glu_name.DisplayName
